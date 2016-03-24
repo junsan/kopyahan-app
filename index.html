@@ -1,11 +1,30 @@
 <!doctype html>
 <html>
   <head>
-  		<title>Kopyahan 1.0</title>
+  		<title>Kopyahan System</title>
+  		<link href="bower_components/angular-material/angular-material.css" rel="stylesheet" />
   </head>
 <body>
-<h1>Kopyahan 1.0</h2>
+	<div ng-app="app">		
+
+		<md-toolbar layout="row">
+      		<div flex style="text-align: center;"><h4>Sign Up</h4></div>
+    	</md-toolbar>
+
+	</div>
 
 
+
+	<script src="bower_components/angular/angular.js" type="text/javascript" ></script>
+    <script src="bower_components/angular-animate/angular-animate.js" type="text/javascript" ></script>
+    <script src="bower_components/angular-aria/angular-aria.js" type="text/javascript" ></script>
+    <script src="bower_components/angular-material/angular-material.js" type="text/javascript" ></script>
+
+    <script>
+        // Include the dependency upon ngMaterial - important !!
+        angular.module('app', ['ngMaterial']);
+
+
+    </script>
 </body>
 </html>
