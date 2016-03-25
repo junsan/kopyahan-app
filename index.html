@@ -2,29 +2,30 @@
 <html>
   <head>
   		<title>Kopyahan System</title>
+      <link href="css/main.css" rel="stylesheet" />
   		<link href="bower_components/angular-material/angular-material.css" rel="stylesheet" />
   </head>
 <body>
+
+
 	<div ng-app="app">		
 
-		<md-toolbar layout="row">
-      		<div flex style="text-align: center;"><h4>Sign Up</h4></div>
-    	</md-toolbar>
 
-	</div>
+      <!-- TemplateView -->
+      <div ng-view=""></div>
 
-
-
-	<script src="bower_components/angular/angular.js" type="text/javascript" ></script>
+	  <script src="bower_components/angular/angular.js" type="text/javascript" ></script>
+    <script src="js/angular-route.js" type="text/javascript" ></script>
+    <!-- Material Design -->
     <script src="bower_components/angular-animate/angular-animate.js" type="text/javascript" ></script>
     <script src="bower_components/angular-aria/angular-aria.js" type="text/javascript" ></script>
     <script src="bower_components/angular-material/angular-material.js" type="text/javascript" ></script>
+    <!-- Firebase -->
+    <script src="https://cdn.firebase.com/js/client/2.2.4/firebase.js"></script>
+    <!-- AngularFire -->
+    <script src="https://cdn.firebase.com/libs/angularfire/1.1.4/angularfire.min.js"></script>
+    <!-- Main App -->
+    <script src="app.js" type="text/javascript" ></script>
 
-    <script>
-        // Include the dependency upon ngMaterial - important !!
-        angular.module('app', ['ngMaterial']);
-
-
-    </script>
 </body>
 </html>

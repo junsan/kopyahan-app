@@ -1,0 +1,20 @@
+<div layout="row" layout-align="center center" flex >
+  <div layout="column" layout-padding  style="width: 400px; height: 400px;" ng-cloak>
+      <form name="projectForm">
+        
+        <div ng-repeat="q in qs">
+          <p>{{ q.$id.toUpperCase() }}. Selected Value: <span class="radioValue">{{ q.value }}</span> </p>
+          <md-radio-group  ng-change="xchange(q);" ng-model="q.value">
+            <md-radio-button value="true" class="md-primary" >True</md-radio-button>
+            <md-radio-button value="false">False</md-radio-button>
+          </md-radio-group>
+          <hr />
+        </div>
+
+      </form>
+  </div>
+  <!-- <ul>
+    <li ng-repeat="message in messages">{{message.$value}}</li>
+  </ul> -->
+</div>
+

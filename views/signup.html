@@ -1,0 +1,26 @@
+<md-toolbar layout="row">
+    <div flex style="text-align: center;"><h4>Sign Up</h4></div>
+</md-toolbar>
+<br><br><br><br><br>
+
+<div layout="row" layout-align="center center" flex >
+  <div layout="column" layout-padding  style="width: 400px; height: 400px;" ng-cloak>
+      <form name="projectForm">
+        <md-input-container class="md-icon-float md-block">
+          <!-- Use floating label instead of placeholder -->
+          <label>Full Name (required)</label>
+          <!-- <md-icon md-svg-src="img/icons/ic_person_24px.svg" class="name"></md-icon> -->
+          <input ng-model="user.name" type="text">
+        </md-input-container>
+        <md-input-container class="md-block">
+          <!-- Use floating placeholder instead of label -->
+          <!-- <md-icon md-svg-src="img/icons/ic_email_24px.svg" class="email"></md-icon> -->
+          <input ng-model="user.email" type="email" placeholder="Email (required)" ng-required="true">
+        </md-input-container>    
+        <md-input-container layout="row"  layout-align="center center">
+          <md-button ng-click="startExam()">Start Exam</md-button>
+          <md-button >Cancel</md-button>
+        </md-input-container>
+      </form>
+  </div>
+</div>
