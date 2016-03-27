@@ -18,7 +18,25 @@ app.config(function($mdThemingProvider, $routeProvider) {
 	});
 });
 
-app.controller('signupController', function($scope,$location,$firebaseObject) {
+app.factory('UserKey', function() {
+    var factory = {};
+  	
+  	factory.key = ''; 
+  	factory.row = '';
+    
+    factory.setKey = function(value) {
+            factory.key = value;
+    }
+
+    factory.setRow = function(value) {
+            factory.row = value;
+    }
+
+    return factory;
+});
+
+app.controller('signupController', function($scope,$location,$firebaseObject,UserKey) {
+
 
 	$scope.startExam = function () {
 		
@@ -34,16 +52,17 @@ app.controller('signupController', function($scope,$location,$firebaseObject) {
 
 		// Retrieve new posts as they are added to our database
 		studentRef.limitToLast(1).on("child_added", function(snapshot, prevChildKey) {
-		  var newPost = snapshot.val();
-		  $scope.userSit = Math.floor(Math.random() * 12) + 1;
+			  var newPost = snapshot.val();
+			  $scope.userSit = Math.floor(Math.random() * 12) + 1;
 
-		  var updateStudentRef = studentRef.child(snapshot.key());
-			updateStudentRef.update({
-			  "sit": $scope.userSit
-		  });
+			  var updateStudentRef = studentRef.child(snapshot.key());
+				updateStudentRef.update({
+				  "sit": $scope.userSit
+			  });
 
-		  name = newPost.name;
-		  console.log(newPost);
+			  UserKey.setKey(snapshot.key());	
+			  name = newPost.name;
+			  console.log(UserKey.key);
 		});
 
 
@@ -65,16 +84,17 @@ app.controller('signupController', function($scope,$location,$firebaseObject) {
 						sitRef.update({
 						  "sitted": name
 						});
+						UserKey.setRow(row);		
 					}
 				});	
 			});
 		});
 
 
-
-
 		$location.path('/classroom');
 	}
+
+
 
 });
 
@@ -123,7 +143,7 @@ function examController($scope,$firebaseObject,$firebaseArray) {
 	}
 }
 
-app.directive('studentList', function () {
+app.directive('studentList', function ($firebaseObject,UserKey) {
         return {
            restrict: 'E',
            scope: {
@@ -131,16 +151,17 @@ app.directive('studentList', function () {
            },
            template: "<div>"+
 			    		"<div style='font-size:11px;margin-bottom:5px;'>Student {{data.value}}</div>"+
-			    		"<div>{{data.sitted}}</div>"+
-						"<md-button class='md-fab md-primary md-hue-2' ng-click='showExam();' aria-label='Profile'>"+
+			    		"<div ng-if='data.sitted'>{{data.sitted}}</div>"+
+						"<md-button ng-if='data.sitted' class='md-fab md-primary md-hue-2' ng-click='showExam();' aria-label='Profile'>"+
 				            "<md-icon md-svg-src='img/icons/android-content-copy-512px.svg'></md-icon>"+
 				        "</md-button>"+
-				        "<md-button class='md-fab ' ng-click='showExam();' aria-label='Profile'>"+
+				        "<md-button ng-if='data.sitted' class='md-fab ' ng-click='logout();' aria-label='Profile'>"+
 				            "<md-icon md-svg-src='img/icons/log-out-512px.svg'></md-icon>"+
 				        "</md-button>"+
 			    	  "</div>",
            link: function(scope, element, attr) {
-
+           	    scope.key = UserKey.key;
+           	    scope.row = UserKey.row;
     			// scope.check = function(customer) {
 				// 	var is_check = false;
 				// 	scope.deletecustomer.forEach(function(c) {
@@ -153,6 +174,27 @@ app.directive('studentList', function () {
 				// 	if(!is_check) scope.deletecustomer.push(customer);
 				// 	console.log(scope.deletecustomer);
 				// }
+
+				scope.logout = function() {
+					
+					var studentRef = new Firebase("https://kopyahan.firebaseio.com/students/"+scope.key);
+					var student = $firebaseObject(studentRef);
+
+					student.$loaded(function(data) {
+						console.log(data.sit);
+						var sitRef = new Firebase("https://kopyahan.firebaseio.com/sits/row"+scope.row+"/sit"+data.sit);
+						sitRef.update({
+							  "sitted": 0
+						});
+
+						studentRef.update({
+				  			"sit": 0
+			  			});
+
+					});
+
+					
+				}
 
            	}
         };
