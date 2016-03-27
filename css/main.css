@@ -4,6 +4,10 @@
   max-height: 100px;
 }
 
+.sitSelected {
+  background-color: yellow;
+}
+
 /*.inputdemoIcons {
   /*
 .right-icon {
