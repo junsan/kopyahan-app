@@ -35,6 +35,62 @@ app.factory('UserKey', function() {
     return factory;
 });
 
+
+app.factory('AIanswer', function(TestPaper) {
+    var factory = {};
+  	
+  	factory.choices = ["a","b","c","d"];
+
+    factory.incorrect = function(testpaper) {
+    	    var answers = []
+            testpaper.forEach(function(test) {
+            	var ans = factory.randomAnswer(test);
+            	answers.push(ans);
+            });
+
+            return answers;
+    }
+
+
+    factory.randomAnswer = function(test) {
+    	var a = factory.choices[Math.floor(Math.random() * 4)];
+    	if(test.correct == a) {
+            a = factory.randomAnswer(test);
+            console.log(a+"="+test.correct);
+        }
+    	return a;
+    }
+
+    return factory;
+});
+
+
+
+app.factory('TestPaper', function() {
+    var factory = {};
+  	
+  	factory.testpaper = [];
+
+    factory.generateTest = function(testpaper) {
+		var qid = [];
+		var x=1;
+
+		while(x <= 5) {	
+			var e = testpaper[Math.floor(Math.random() * testpaper.length)];
+			var index = qid.indexOf(e.$id);
+			if(index<=-1) {
+				factory.testpaper.push(e);
+				qid.push(e.$id)
+				x++;
+			}
+		}	
+    }
+
+    return factory;
+});
+
+
+
 app.controller('signupController', function($scope,$location,$firebaseObject,UserKey) {
 
 
@@ -65,15 +121,11 @@ app.controller('signupController', function($scope,$location,$firebaseObject,Use
 			  console.log(UserKey.key);
 		});
 
-
-
 		var chairsRef = new Firebase("https://kopyahan.firebaseio.com/sits");
 
 		$scope.chairs = $firebaseObject(chairsRef);
 		var row = 0;
 		//console.log($scope.userSits);
-
-
 		$scope.chairs.$loaded(function(data) {
 			angular.forEach(data, function(chair) {
 				row++; 
@@ -90,60 +142,70 @@ app.controller('signupController', function($scope,$location,$firebaseObject,Use
 			});
 		});
 
-
 		$location.path('/classroom');
 	}
 
-
-
 });
 
-app.controller('classroomController', function($scope,$mdDialog,$firebaseObject) {
-	
-
-	$scope.isSelected = true;
+app.controller('classroomController', function($scope,$mdDialog,$firebaseObject,$firebaseArray,UserKey,TestPaper) {
 
 	var chairsRef = new Firebase("https://kopyahan.firebaseio.com/sits");
-
 	$scope.chairs = $firebaseObject(chairsRef);
 
-	//console.log($scope.chairs);
+	var studentRef = new Firebase("https://kopyahan.firebaseio.com/students/"+UserKey.key);
+	var student = $firebaseObject(studentRef);
+	
+  	var qRef = new Firebase("https://kopyahan.firebaseio.com/questions");
+	$scope.qs = $firebaseArray(qRef);
 
-	$scope.showExam = function(ev) {
-	    $mdDialog.show({
-	      controller: examController,
-	      templateUrl: 'views/exam.tmp.html',
-	      parent: angular.element(document.body),
-	      targetEvent: ev,
-	      clickOutsideToClose:true
-	    })
-        .then(function(answer) {
-          $scope.status = 'You said the information was "' + answer + '".';
-        }, function() {
-          $scope.status = 'You cancelled the dialog.';
-        });
- 	};
+	$scope.qs.$loaded(function(test) {
+		TestPaper.generateTest(test);
+	});
 
+	// console.log(student.name);
 });
 
 function examController($scope,$firebaseObject,$firebaseArray) {
 
 	var ref = new Firebase("https://kopyahan.firebaseio.com/questions");
+	var correct = [];
 
 	$scope.qs = $firebaseArray(ref);
 	console.log($scope.qs);
-	$scope.xchange = function(q) {
-		
 
-		var hopperRef = ref.child(q.$id);
-		hopperRef.update({
-		  "value": q.value
+	$scope.answer = function(q,ans) {
+		
+		angular.forEach($scope.qs, function(question) { 
+			if(question.$id == q) {
+				console.log(question.content);
+				if(question.correct == ans) {
+					correct.push(question.$id);
+					console.log("Correct!");
+				} else {
+					var index = correct.indexOf(question.$id);
+					if(index!=-1){
+					   correct.splice(index, 1);
+					}
+				}
+			}
 		});
 
+		console.log(correct);
+		console.log(scorePercentage());
 	}
+
+
+	var scorePercentage = function () {
+		return Math.floor((correct.length/$scope.qs.length) * 100);
+	}
+
+	$scope.checkAnswer = function() {
+		
+	}
+
 }
 
-app.directive('studentList', function ($firebaseObject,UserKey) {
+app.directive('studentList', function ($firebaseObject,UserKey,$mdDialog) {
         return {
            restrict: 'E',
            scope: {
@@ -155,25 +217,23 @@ app.directive('studentList', function ($firebaseObject,UserKey) {
 						"<md-button ng-if='data.sitted' class='md-fab md-primary md-hue-2' ng-click='showExam();' aria-label='Profile'>"+
 				            "<md-icon md-svg-src='img/icons/android-content-copy-512px.svg'></md-icon>"+
 				        "</md-button>"+
-				        "<md-button ng-if='data.sitted' class='md-fab ' ng-click='logout();' aria-label='Profile'>"+
-				            "<md-icon md-svg-src='img/icons/log-out-512px.svg'></md-icon>"+
-				        "</md-button>"+
+				        // "<md-button ng-if='data.sitted' class='md-fab ' ng-click='logout();' aria-label='Profile'>"+
+				        //     "<md-icon md-svg-src='img/icons/log-out-512px.svg'></md-icon>"+
+				        // "</md-button>"+
 			    	  "</div>",
            link: function(scope, element, attr) {
            	    scope.key = UserKey.key;
            	    scope.row = UserKey.row;
-    			// scope.check = function(customer) {
-				// 	var is_check = false;
-				// 	scope.deletecustomer.forEach(function(c) {
-				// 		if(c.id ==  customer.id) {
-				// 			var index = scope.deletecustomer.indexOf(customer);
-				// 			scope.deletecustomer.splice(index, 1); 
-				// 			is_check = true;
-				// 		} 
-				// 	});
-				// 	if(!is_check) scope.deletecustomer.push(customer);
-				// 	console.log(scope.deletecustomer);
-				// }
+
+				scope.showExam = function(ev) {
+				    $mdDialog.show({
+				      controller: examController,
+				      templateUrl: 'views/exam.tmp.html',
+				      parent: angular.element(document.body),
+				      targetEvent: ev,
+				      clickOutsideToClose:true
+				    });
+			 	};
 
 				scope.logout = function() {
 					
@@ -196,6 +256,74 @@ app.directive('studentList', function ($firebaseObject,UserKey) {
 					
 				}
 
+           	}
+        };
+});
+
+
+app.directive('aiStudent', function ($firebaseObject,UserKey,$mdDialog) {
+        return {
+           restrict: 'E',
+           scope: {
+           		data: "=",
+           },
+           template: "<div>"+
+			    		"<div style='font-size:11px;margin-bottom:5px;'>AI Student {{data.value}}</div>"+
+			    		"<div ng-if='data.sitted'>AI</div>"+
+						"<md-button class='md-fab md-primary md-hue-2' ng-click='showExam();' aria-label='Profile'>"+
+				            "<md-icon md-svg-src='img/icons/android-content-copy-512px.svg'></md-icon>"+
+				        "</md-button>"+
+				        // "<md-button ng-if='data.sitted' class='md-fab ' ng-click='logout();' aria-label='Profile'>"+
+				        //     "<md-icon md-svg-src='img/icons/log-out-512px.svg'></md-icon>"+
+				        // "</md-button>"+
+			    	  "</div>",
+           link: function(scope, element, attr) {
+           	    scope.key = UserKey.key;
+           	    scope.row = UserKey.row;
+
+				scope.showExam = function(ev) {
+				    $mdDialog.show({
+				      $scope: scope,
+				      template: '<exam></exam>',
+				      parent: angular.element(document.body),
+				      targetEvent: ev,
+				      clickOutsideToClose:true,
+				      controller: function aiexamController($scope, $mdDialog) {
+                     		$scope.aidata = scope.data;
+                     			
+
+                     		console.log(scope.data);
+	                  }
+				    });
+			 	};
+
+
+
+           	}
+        };
+});
+
+
+
+app.directive('exam', function ($firebaseArray,$mdDialog,AIanswer,TestPaper) {
+        return {
+           restrict: 'E',
+           scope: {
+           		data: "=",
+           },
+           templateUrl: "views/randomexam.html",
+           link: function(scope, element, attr) {
+				
+				scope.testpaper = TestPaper.testpaper;
+				
+				// scope.answers = AIanswer.incorrect(scope.testpaper);
+				// var y = 0;	
+				// angular.forEach(scope.testpaper, function(test) {
+				// 	test["ans"] = scope.answers[y];
+				// 	y++;
+				// });
+
+				console.log(scope.testpaper);			
            	}
         };
 });

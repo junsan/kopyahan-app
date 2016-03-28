@@ -1,0 +1,18 @@
+<div layout="row" layout-align="top center" flex >
+  <div layout="column" layout-padding  style="width: 600px; height: 700px;" ng-cloak>
+      <form name="projectForm">
+        <br><br>
+        <div ng-repeat="q in testpaper">
+          <p>{{ q.$id.toUpperCase() }}. {{ q.content }} {{ value }}</p>
+            <md-radio-group layout="row"  layout-align="top left" layout-padding  ng-model="q.ans">
+              <md-radio-button ng-repeat="(ckey, cvalue) in q.choices" class="md-warn" value="{{ckey}}">{{cvalue}}</md-radio-button>
+            </md-radio-group>
+            <hr />
+        </div>
+      </form>
+  </div>
+  <!-- <ul>
+    <li ng-repeat="message in messages">{{message.$value}}</li>
+  </ul> -->
+</div>
+

@@ -11,29 +11,12 @@
 
 <div layout="row">
     <div flex="50" layout="row" layout-xs="column"  layout-padding>
-    	<student-list flex='30' class='chair' ng-class="{sitSelected: chair.sitted}" ng-repeat="chair in chairs.row1" data="chair"></student-list>
+    	<ai-student flex='30' class='chair ai-chair' ng-repeat="chair in [1,2,3]" data="chair"></ai-student>
     </div>
     <div flex="50" layout="row" layout-xs="column"  layout-padding>
-    	<student-list flex='30' class='chair' ng-class="{sitSelected: chair.sitted}" ng-repeat="chair in chairs.row2" data="chair"></student-list>
+    	<ai-student flex='30' class='chair ai-chair' ng-repeat="chair in [4,5,6]" data="chair"></ai-student>
     </div>
 </div>
 
-<div layout="row">
-    <div flex="50" layout="row" layout-xs="column"  layout-padding>
-    	<student-list flex='30' class='chair' ng-class="{sitSelected: chair.sitted}" ng-repeat="chair in chairs.row3" data="chair"></student-list>
-    </div>
-    <div flex="50" layout="row" layout-xs="column"  layout-padding>
-    	<student-list flex='30' class='chair' ng-class="{sitSelected: chair.sitted}" ng-repeat="chair in chairs.row4" data="chair"></student-list>
-    </div>
-</div>
-
-<div layout="row">
-    <div flex="50" layout="row" layout-xs="column"  layout-padding>
-    	<student-list flex='30' class='chair' ng-class="{sitSelected: chair.sitted}" ng-repeat="chair in chairs.row5" data="chair"></student-list>
-    </div>
-    <div flex="50" layout="row" layout-xs="column"  layout-padding>
-    	<student-list flex='30' class='chair' ng-class="{sitSelected: chair.sitted}" ng-repeat="chair in chairs.row6" data="chair"></student-list>
-    </div>
-</div>
 
 
